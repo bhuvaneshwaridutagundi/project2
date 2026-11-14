@@ -1,0 +1,105 @@
+/* Prompt Injection Security Gateway - Dark Blue Theme */
+
+body {
+    background-color: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.card {
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.btn-primary {
+    background-color: #1e40af;
+    border-color: #1e40af;
+}
+
+.btn-primary:hover {
+    background-color: #1e3a8a;
+    border-color: #1e3a8a;
+}
+
+#decision-badge {
+    font-weight: 600;
+    padding: 0.5em 1em;
+}
+
+.badge-ALLOW {
+    background-color: #10b981;
+}
+
+.badge-FLAG {
+    background-color: #f59e0b;
+}
+
+.badge-BLOCK {
+    background-color: #ef4444;
+}
+
+.findings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.findings-list li {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.findings-list li.warning {
+    border-left-color: #f59e0b;
+}
+
+.findings-list li.danger {
+    border-left-color: #ef4444;
+}
+
+.findings-list .code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+    color: #64748b;
+}
+
+.findings-list .message {
+    margin-top: 0.25rem;
+}
+
+#ai-response {
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 0.375rem;
+}
+
+#ai-response p {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+#logs-container .list-group-item {
+    border-left: 4px solid #cbd5e1;
+}
+
+.logs-badge-ALLOW {
+    background-color: #10b981;
+}
+
+.logs-badge-FLAG {
+    background-color: #f59e0b;
+}
+
+.logs-badge-BLOCK {
+    background-color: #ef4444;
+}

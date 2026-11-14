@@ -1,0 +1,19 @@
+Introduction to Cybersecurity
+
+This document provides an overview of fundamental cybersecurity concepts.
+
+1. Firewalls
+   A firewall is a network security device that monitors and controls incoming and outgoing network traffic based on predetermined security rules.
+
+2. Encryption
+   Encryption is the process of encoding information so that only authorized parties can access it.
+
+3. Authentication vs Authorization
+   Authentication verifies who you are (username/password).
+   Authorization determines what you can access (permissions).
+
+4. Best Practices
+   - Use strong passwords
+   - Enable two-factor authentication
+   - Keep software updated
+   - Backup data regularly
