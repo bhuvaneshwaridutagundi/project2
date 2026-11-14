@@ -71,6 +71,7 @@ def create_app(config_class=Config, test_mode=False) -> Flask:
             "llm_configured": llm_client.is_configured,
             "provider": llm_client.provider_name,
             "model": llm_client.model_name if llm_client.is_configured else None,
+            "max_upload_size_bytes": app.config["MAX_CONTENT_LENGTH"],
         })
 
     @app.route("/api/scan", methods=["POST"])
@@ -336,7 +337,11 @@ def create_app(config_class=Config, test_mode=False) -> Flask:
         limit = min(limit, 1000)  # Cap the limit
 
         logs = app.audit_logger.get_recent_scans(limit)
-        return jsonify({"logs": logs, "count": len(logs)})
+        return jsonify({
+            "logs": logs,
+            "count": len(logs),
+            "summary": app.audit_logger.get_dashboard_summary(),
+        })
 
     return app
 
@@ -355,9 +360,7 @@ def _get_severity(score: int) -> str:
 app = create_app()
 
 if __name__ == "__main__":
-    # Get port from environment or default to 5000
-    port = int(os.environ.get("PORT", 5000))
-    # Debug mode should be controlled by FLASK_ENV
-    debug = os.environ.get("FLASK_ENV") == "development"
+    port = int(os.environ.get("PORT", 5055))
+    debug = False
 
-    app.run(host="0.0.0.0", port=port, debug=debug)
+    app.run(host="127.0.0.1", port=port, debug=debug)

@@ -422,6 +422,40 @@ class TestLogsEndpoint:
         assert "logs" in data
         assert isinstance(data["logs"], list)
 
+    def test_logs_include_database_aggregated_dashboard_summary(self, client):
+        audit_logger = client.application.audit_logger
+        for scan_id, decision, score, finding_codes in [
+            ("safe-scan", "ALLOW", 0, []),
+            ("flagged-scan", "FLAG", 45, ["SAFETY_BYPASS"]),
+            ("blocked-scan", "BLOCK", 100, ["SECRET_REVEAL"]),
+        ]:
+            audit_logger.log(
+                scan_id=scan_id,
+                input_type="text",
+                decision=decision,
+                risk_score=score,
+                finding_codes=finding_codes,
+                duration_ms=10,
+                llm_invoked=False,
+            )
+
+        response = client.get("/api/logs?limit=1")
+
+        assert response.status_code == 200
+        data = response.get_json()
+        summary = data["summary"]
+        assert data["count"] == 1
+        assert summary["total_scans"] == 3
+        assert summary["safe_prompts"] == 1
+        assert summary["threats_detected"] == 2
+        assert summary["blocked_prompts"] == 1
+        assert summary["decisions"] == {"ALLOW": 1, "FLAG": 1, "BLOCK": 1}
+        assert summary["risk_distribution"] == {
+            "low": 1,
+            "medium": 1,
+            "high": 1,
+        }
+
     def test_logs_limit_parameter(self, client):
         """Test logs endpoint respects limit parameter."""
         response = client.get("/api/logs?limit=5")
@@ -447,6 +481,7 @@ class TestHealthEndpoint:
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "healthy"
+        assert data["max_upload_size_bytes"] == Config.MAX_CONTENT_LENGTH
 
     def test_health_shows_llm_config(self, client):
         """Test health endpoint shows LLM configuration status."""

@@ -3,125 +3,342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Injection Security Gateway</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <meta name="theme-color" content="#090e18">
+    <meta name="description" content="Prompt Injection Security Gateway dashboard for prompt and document risk analysis.">
+    <title>Security Gateway | Prompt Injection Defense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container-fluid">
-        <header class="bg-primary text-white py-3 mb-4">
-            <h1 class="mb-0">Prompt Injection Security Gateway</h1>
-            <small class="text-white-50">AI Security Middleware</small>
-        </header>
+    <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+        <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+        <symbol id="icon-scan" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M3 12h18M12 3v18"/></symbol>
+        <symbol id="icon-file" viewBox="0 0 24 24"><path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10Z"/><path d="M13 3v7h7M8 14h8M8 17h6"/></symbol>
+        <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></symbol>
+        <symbol id="icon-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 14 4-4 4 3 6-7"/></symbol>
+        <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z" transform="translate(-1 -1)"/></symbol>
+        <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+        <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+        <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+        <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+        <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+        <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3"/></symbol>
+        <symbol id="icon-spark" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/></symbol>
+    </svg>
 
-        <!-- Health Status -->
-        <div id="health-status" class="alert alert-info mb-4 d-none">
-            <strong>Status:</strong> <span id="status-text">Checking...</span>
-            <span id="llm-status" class="float-end">LLM: <span class="badge bg-secondary">Not Configured</span></span>
-        </div>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+            <a class="brand" href="#dashboard" aria-label="Security Gateway dashboard">
+                <span class="brand-mark"><svg class="icon"><use href="#icon-shield"/></svg></span>
+                <span class="brand-copy"><strong>Sentinel<span class="brand-dot">.</span></strong><small>PROMPT SECURITY GATEWAY</small></span>
+            </a>
 
-        <div class="row">
-            <!-- Text Scan Section -->
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Text Prompt Scanner</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="scan-form">
-                            <div class="mb-3">
-                                <label for="prompt-text" class="form-label">Enter your prompt:</label>
-                                <textarea class="form-control" id="prompt-text" rows="4"
-                                    placeholder="Ask a question or submit a task..."></textarea>
-                            </div>
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary" data-action="scan">
-                                    Scan Prompt
-                                </button>
-                                <button type="submit" class="btn btn-outline-primary" data-action="ask">
-                                    Scan &amp; Ask Gemini
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="nav-label">WORKSPACE</div>
+            <nav class="side-nav">
+                <a class="nav-link active" href="#dashboard" data-section="dashboard"><svg class="icon"><use href="#icon-grid"/></svg><span>Dashboard</span></a>
+                <a class="nav-link" href="#text-scanner" data-section="text-scanner"><svg class="icon"><use href="#icon-scan"/></svg><span>Text prompt scanner</span></a>
+                <a class="nav-link" href="#document-scanner" data-section="document-scanner"><svg class="icon"><use href="#icon-file"/></svg><span>Document scanner</span></a>
+                <a class="nav-link" href="#recent-scans" data-section="recent-scans"><svg class="icon"><use href="#icon-history"/></svg><span>Recent scans</span></a>
+                <a class="nav-link" href="#analytics" data-section="analytics"><svg class="icon"><use href="#icon-chart"/></svg><span>Security analytics</span></a>
+            </nav>
+
+            <div class="nav-label nav-label-lower">PREFERENCES</div>
+            <nav class="side-nav">
+                <a class="nav-link" href="#settings" data-section="settings"><svg class="icon"><use href="#icon-settings"/></svg><span>Settings</span></a>
+            </nav>
+
+            <div class="sidebar-foot">
+                <div class="privacy-note"><svg class="icon"><use href="#icon-lock"/></svg><span>Prompts are scanned in-session.<br>Content isn't stored in scan history.</span></div>
+                <div class="sidebar-version"><span class="status-pulse"></span><span id="sidebar-health">Connecting to gateway</span><span class="version-label">LOCAL</span></div>
             </div>
+        </aside>
 
-            <!-- File Upload Section -->
-            <div class="col-lg-6 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Document Scanner</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="file-form" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="file-input" class="form-label">Upload document:</label>
-                                <input class="form-control" type="file" id="file-input"
-                                    accept=".txt,.pdf,.docx">
-                                <small class="text-muted">Supported: TXT, PDF, DOCX (max 10 MB)</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">Extract & Scan</button>
-                        </form>
-                    </div>
+        <div class="sidebar-scrim" id="sidebar-scrim"></div>
+        <div class="main-shell">
+            <header class="topbar">
+                <button class="icon-button mobile-menu" id="menu-toggle" type="button" aria-label="Open navigation"><svg class="icon"><use href="#icon-menu"/></svg></button>
+                <div class="breadcrumb"><span>Workspace</span><span class="breadcrumb-slash">/</span><strong id="current-page">Dashboard</strong></div>
+                <div class="topbar-right">
+                    <span class="topbar-local"><svg class="icon"><use href="#icon-lock"/></svg> Local gateway</span>
+                    <span class="topbar-divider"></span>
+                    <span class="gateway-status"><span class="status-pulse"></span><span id="status-text">Checking status</span></span>
                 </div>
-            </div>
-        </div>
+            </header>
 
-        <!-- Results Section -->
-        <div class="row">
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Results</h5>
+            <main class="page-content">
+                <section class="page-section dashboard-section" id="dashboard" data-page-title="Dashboard">
+                    <div class="page-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> SECURITY OVERVIEW</div>
+                            <h1>Gateway dashboard</h1>
+                            <p class="page-subtitle">Monitor prompt security and scan activity across your gateway.</p>
+                        </div>
+                        <a class="button button-primary heading-action" href="#text-scanner"><svg class="icon"><use href="#icon-scan"/></svg> New scan</a>
                     </div>
-                    <div class="card-body">
-                        <div id="result-panel" class="d-none">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <h6 class="mb-1">Decision: <span id="decision-badge">--</span></h6>
-                                    <p class="mb-0 text-muted">
-                                        Severity: <span id="risk-severity">--</span>
-                                        <span class="mx-1">|</span>
-                                        Risk Score: <span id="risk-score">--</span>
-                                    </p>
+
+                    <div class="metric-grid" aria-label="Scan summary">
+                        <article class="metric-card metric-total">
+                            <div class="metric-top"><span class="metric-label">Total prompts scanned</span><span class="metric-icon"><svg class="icon"><use href="#icon-scan"/></svg></span></div>
+                            <div class="metric-value" id="metric-total">—</div>
+                            <div class="metric-foot"><span class="metric-dot dot-blue"></span><span>All recorded scans</span></div>
+                        </article>
+                        <article class="metric-card metric-threat">
+                            <div class="metric-top"><span class="metric-label">Threats detected</span><span class="metric-icon icon-amber"><svg class="icon"><use href="#icon-shield"/></svg></span></div>
+                            <div class="metric-value" id="metric-threats">—</div>
+                            <div class="metric-foot"><span class="metric-dot dot-amber"></span><span>Flagged or blocked</span></div>
+                        </article>
+                        <article class="metric-card metric-safe">
+                            <div class="metric-top"><span class="metric-label">Safe prompts</span><span class="metric-icon icon-green"><svg class="icon"><use href="#icon-check"/></svg></span></div>
+                            <div class="metric-value" id="metric-safe">—</div>
+                            <div class="metric-foot"><span class="metric-dot dot-green"></span><span>Allowed by policy</span></div>
+                        </article>
+                        <article class="metric-card metric-blocked">
+                            <div class="metric-top"><span class="metric-label">Blocked prompts</span><span class="metric-icon icon-red"><svg class="icon"><use href="#icon-lock"/></svg></span></div>
+                            <div class="metric-value" id="metric-blocked">—</div>
+                            <div class="metric-foot"><span class="metric-dot dot-red"></span><span>Held from the LLM</span></div>
+                        </article>
+                    </div>
+
+                    <div class="overview-grid">
+                        <article class="panel activity-panel">
+                            <div class="panel-heading">
+                                <div><div class="panel-kicker">TRAFFIC</div><h2>Scan activity</h2></div>
+                                <span class="period-chip">Last 7 days</span>
+                            </div>
+                            <div class="chart-wrap chart-wrap-activity" id="activity-chart" aria-label="Scan activity over the last seven days"><div class="chart-empty">Loading scan activity…</div></div>
+                            <div class="chart-footnote"><span class="chart-legend-dot"></span> Scans recorded per day</div>
+                        </article>
+                        <article class="panel distribution-panel">
+                            <div class="panel-heading">
+                                <div><div class="panel-kicker">POLICY OUTCOMES</div><h2>Decision distribution</h2></div>
+                                <a class="text-link" href="#analytics">View analytics <svg class="icon"><use href="#icon-arrow"/></svg></a>
+                            </div>
+                            <div class="donut-layout">
+                                <div class="donut-chart" id="decision-chart" role="img" aria-label="Decision distribution chart"><div class="donut-center"><strong id="donut-total">—</strong><span>scans</span></div></div>
+                                <div class="chart-legend" id="decision-legend">
+                                    <div class="chart-empty">Loading decisions…</div>
                                 </div>
-                                <span id="response-time" class="text-muted small"></span>
                             </div>
+                        </article>
+                    </div>
 
-                            <p id="decision-message" class="mb-3"></p>
-                            <div id="findings-container" class="mb-3"></div>
-
-                            <div id="ai-response" class="mt-3"></div>
-
-                            <div id="error-alert" class="alert alert-warning d-none"></div>
+                    <article class="panel activity-table-panel">
+                        <div class="panel-heading">
+                            <div><div class="panel-kicker">LATEST EVENTS</div><h2>Recent scan activity</h2></div>
+                            <a class="text-link" href="#recent-scans">View all scans <svg class="icon"><use href="#icon-arrow"/></svg></a>
                         </div>
-                        <div id="empty-result" class="text-muted">
-                            Scan a prompt or upload a document to see results.
+                        <div class="table-scroll">
+                            <table class="data-table compact-table">
+                                <thead><tr><th>SCAN ID</th><th>INPUT</th><th>DECISION</th><th>RISK</th><th>TIME</th></tr></thead>
+                                <tbody id="activity-table-body"><tr><td class="table-empty" colspan="5">Loading scan history…</td></tr></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="page-section" id="text-scanner" data-page-title="Text prompt scanner">
+                    <div class="page-heading section-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> PROMPT INSPECTION</div>
+                            <h1>Text prompt scanner</h1>
+                            <p class="page-subtitle">Inspect untrusted text before it reaches your AI application.</p>
+                        </div>
+                        <span class="subtle-chip"><span class="status-pulse"></span> Rule-based analysis</span>
+                    </div>
+                    <div class="scanner-layout">
+                        <article class="panel scanner-panel">
+                            <div class="scanner-panel-head">
+                                <div class="scanner-title-icon"><svg class="icon"><use href="#icon-scan"/></svg></div>
+                                <div><h2>Analyze a prompt</h2><p>Content is assessed locally by the gateway's security policy.</p></div>
+                            </div>
+                            <form id="scan-form">
+                                <label class="field-label" for="prompt-text">PROMPT CONTENT</label>
+                                <div class="textarea-shell">
+                                    <textarea id="prompt-text" name="text" rows="8" maxlength="20000" placeholder="Paste or type the prompt you want to inspect…" aria-describedby="prompt-help"></textarea>
+                                    <div class="textarea-meta"><span id="prompt-help">Your text is not added to scan history.</span><span id="char-count">0 / 20,000</span></div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="button button-quiet" id="clear-prompt" type="button">Clear</button>
+                                    <div class="action-group">
+                                        <button class="button button-secondary" type="submit" data-action="ask"><svg class="icon"><use href="#icon-spark"/></svg><span>Scan &amp; ask AI</span></button>
+                                        <button class="button button-primary" type="submit" data-action="scan"><svg class="icon"><use href="#icon-scan"/></svg><span>Scan prompt</span></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </article>
+                        <aside class="panel scanner-info">
+                            <div class="info-shield"><svg class="icon"><use href="#icon-shield"/></svg></div>
+                            <h3>Safety by design</h3>
+                            <p>The gateway returns an explainable policy decision. A scan is a risk assessment, not proof that content is safe.</p>
+                            <div class="info-rule"><span class="decision-dot allow-dot"></span><span><strong>ALLOW</strong><small>Low risk · eligible for processing</small></span></div>
+                            <div class="info-rule"><span class="decision-dot flag-dot"></span><span><strong>FLAG</strong><small>Review required before forwarding</small></span></div>
+                            <div class="info-rule"><span class="decision-dot block-dot"></span><span><strong>BLOCK</strong><small>Content is never sent to the LLM</small></span></div>
+                        </aside>
+                    </div>
+                    <article class="panel result-panel" id="result-panel" aria-live="polite" hidden>
+                        <div class="panel-heading result-panel-heading">
+                            <div><div class="panel-kicker">ANALYSIS REPORT</div><h2>Latest scan result</h2></div>
+                            <span id="result-scan-id" class="scan-id"></span>
+                        </div>
+                        <div class="result-summary" id="result-summary">
+                            <div class="result-decision"><span id="decision-badge" class="decision-badge">—</span><span id="risk-severity" class="severity-label">—</span></div>
+                            <div class="score-block"><span>RISK SCORE</span><strong id="risk-score">—</strong><div class="score-track"><span id="score-fill"></span></div></div>
+                            <p id="decision-message" class="result-message"></p>
+                        </div>
+                        <div class="findings-section"><div class="panel-kicker">DETECTION FINDINGS</div><div id="findings-container"><p class="muted-copy">No scan results yet.</p></div></div>
+                        <div id="ai-response" class="ai-response" hidden><div class="panel-kicker">AI RESPONSE</div><p id="ai-response-text"></p></div>
+                        <div id="error-alert" class="inline-alert" role="status" hidden></div>
+                    </article>
+                </section>
+
+                <section class="page-section" id="document-scanner" data-page-title="Document scanner">
+                    <div class="page-heading section-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> FILE INSPECTION</div>
+                            <h1>Document scanner</h1>
+                            <p class="page-subtitle">Extract and inspect document text for suspicious instructions.</p>
+                        </div>
+                        <span class="subtle-chip">TXT <span class="format-separator">·</span> PDF <span class="format-separator">·</span> DOCX</span>
+                    </div>
+                    <div class="document-layout">
+                        <article class="panel document-panel">
+                            <form id="file-form" enctype="multipart/form-data">
+                                <input class="visually-hidden" type="file" id="file-input" name="file" accept=".txt,.pdf,.docx">
+                                <button class="drop-zone" id="drop-zone" type="button" aria-describedby="file-help">
+                                    <span class="upload-icon"><svg class="icon"><use href="#icon-upload"/></svg></span>
+                                    <strong id="drop-title">Drop your document here</strong>
+                                    <span id="drop-description">or <span class="browse-link">browse files</span> from your device</span>
+                                    <span class="drop-formats" id="file-help">TXT, PDF, DOCX <span>·</span> Up to <span id="upload-limit">—</span></span>
+                                </button>
+                                <div class="file-details" id="file-details" hidden>
+                                    <div class="file-type-mark" id="file-type-mark">TXT</div>
+                                    <div class="file-copy"><strong id="file-name"></strong><span id="file-size"></span></div>
+                                    <button class="icon-button remove-file" id="remove-file" type="button" aria-label="Remove selected file"><svg class="icon"><use href="#icon-close"/></svg></button>
+                                </div>
+                                <div class="upload-progress" id="upload-progress" hidden>
+                                    <div class="progress-label"><span id="progress-label">Uploading document</span><span id="progress-value">0%</span></div>
+                                    <div class="progress-track"><span id="progress-fill"></span></div>
+                                </div>
+                                <div class="document-actions">
+                                    <span class="muted-copy">Files are processed temporarily and removed after scanning.</span>
+                                    <button class="button button-primary" id="file-submit" type="submit" disabled><svg class="icon"><use href="#icon-scan"/></svg><span>Extract &amp; scan</span></button>
+                                </div>
+                            </form>
+                        </article>
+                        <aside class="panel extraction-note">
+                            <div class="note-icon"><svg class="icon"><use href="#icon-lock"/></svg></div>
+                            <h3>Documents stay untrusted</h3>
+                            <p>Extracted text is scanned separately. It is never merged into trusted system instructions.</p>
+                            <div class="note-divider"></div>
+                            <p class="note-small"><strong>PDF note</strong><br>Scanned image-only PDFs need OCR, which is not supported. Files without extractable text return a controlled error.</p>
+                        </aside>
+                    </div>
+                </section>
+
+                <section class="page-section" id="recent-scans" data-page-title="Recent scans">
+                    <div class="page-heading section-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> AUDIT TRAIL</div>
+                            <h1>Recent scans</h1>
+                            <p class="page-subtitle">Scan metadata only — prompt and document content are not shown or stored here.</p>
+                        </div>
+                        <div class="table-tools">
+                            <label class="search-field"><span class="visually-hidden">Search scan history</span><svg class="icon"><use href="#icon-history"/></svg><input id="scan-search" type="search" placeholder="Search scan ID"></label>
+                            <select class="filter-select" id="decision-filter" aria-label="Filter by decision"><option value="all">All decisions</option><option value="ALLOW">Allow</option><option value="FLAG">Flag</option><option value="BLOCK">Block</option></select>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <article class="panel history-panel">
+                        <div class="table-scroll">
+                            <table class="data-table history-table">
+                                <thead><tr><th>SCAN ID</th><th>INPUT TYPE</th><th>DECISION</th><th>RISK SCORE</th><th>SCANNED AT</th></tr></thead>
+                                <tbody id="history-table-body"><tr><td class="table-empty" colspan="5">Loading scan history…</td></tr></tbody>
+                            </table>
+                        </div>
+                        <div class="table-footer"><span id="history-count">Loading history…</span><span>Latest 1,000 records</span></div>
+                    </article>
+                </section>
 
-        <!-- Logs Section -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Recent Scans</h5>
+                <section class="page-section" id="analytics" data-page-title="Security analytics">
+                    <div class="page-heading section-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> SECURITY INSIGHTS</div>
+                            <h1>Security analytics</h1>
+                            <p class="page-subtitle">Decision and risk trends calculated from recorded gateway scans.</p>
+                        </div>
+                        <span class="period-chip">All-time totals <span class="format-separator">·</span> 7-day activity</span>
                     </div>
-                    <div class="card-body">
-                        <div id="logs-container">
-                            <p class="text-muted">Loading logs...</p>
+                    <div class="analytics-grid">
+                        <article class="panel analytics-card">
+                            <div class="panel-heading"><div><div class="panel-kicker">POLICY OUTCOMES</div><h2>ALLOW vs FLAG vs BLOCK</h2></div></div>
+                            <div class="donut-layout analytics-donut-layout">
+                                <div class="donut-chart large-donut" id="decision-chart-large" role="img" aria-label="Decision distribution chart"><div class="donut-center"><strong id="donut-total-large">—</strong><span>scans</span></div></div>
+                                <div class="chart-legend" id="decision-legend-large"><div class="chart-empty">Loading decisions…</div></div>
+                            </div>
+                        </article>
+                        <article class="panel analytics-card">
+                            <div class="panel-heading"><div><div class="panel-kicker">RISK PROFILE</div><h2>Risk score distribution</h2></div></div>
+                            <div class="risk-bars" id="risk-chart"><div class="chart-empty">Loading risk distribution…</div></div>
+                            <p class="chart-caption">Policy-aligned score bands · 0–29 low, 30–69 medium, 70–100 high</p>
+                        </article>
+                        <article class="panel analytics-card analytics-wide">
+                            <div class="panel-heading"><div><div class="panel-kicker">SCAN VOLUME</div><h2>Recent scanning activity</h2></div><span class="period-chip">Last 7 days</span></div>
+                            <div class="chart-wrap chart-wrap-activity chart-wrap-large" id="analytics-activity-chart" aria-label="Recent scanning activity"><div class="chart-empty">Loading scan activity…</div></div>
+                        </article>
+                    </div>
+                    <div class="analytics-disclaimer"><svg class="icon"><use href="#icon-lock"/></svg> Analytics summarize scan metadata; they do not represent proof that content is safe.</div>
+                </section>
+
+                <section class="page-section" id="settings" data-page-title="Settings">
+                    <div class="page-heading section-heading">
+                        <div>
+                            <div class="eyebrow"><span class="eyebrow-line"></span> GATEWAY CONFIGURATION</div>
+                            <h1>Settings &amp; status</h1>
+                            <p class="page-subtitle">Current service status and security policy information.</p>
                         </div>
                     </div>
-                </div>
-            </div>
+                    <div class="settings-grid">
+                        <article class="panel settings-card">
+                            <div class="settings-card-heading"><span class="settings-icon"><svg class="icon"><use href="#icon-shield"/></svg></span><div><h2>Gateway service</h2><p>Health check from the running Flask service</p></div></div>
+                            <div class="settings-row"><span>Service status</span><strong id="settings-health">Checking…</strong></div>
+                            <div class="settings-row"><span>LLM provider</span><strong id="settings-provider">Checking…</strong></div>
+                            <div class="settings-row"><span>Model</span><strong id="settings-model">—</strong></div>
+                            <div class="settings-row"><span>Maximum upload</span><strong id="settings-upload-limit">—</strong></div>
+                        </article>
+                        <article class="panel settings-card">
+                            <div class="settings-card-heading"><span class="settings-icon settings-icon-violet"><svg class="icon"><use href="#icon-lock"/></svg></span><div><h2>Policy guardrails</h2><p>Decisions are enforced by the existing backend policy engine</p></div></div>
+                            <div class="settings-row"><span><span class="decision-dot allow-dot"></span> ALLOW</span><strong>Risk score 0–29</strong></div>
+                            <div class="settings-row"><span><span class="decision-dot flag-dot"></span> FLAG</span><strong>Risk score 30–69</strong></div>
+                            <div class="settings-row"><span><span class="decision-dot block-dot"></span> BLOCK</span><strong>Risk score 70+</strong></div>
+                            <p class="settings-footnote">Blocked content is not forwarded. Flagged content stays on hold until confirmed.</p>
+                        </article>
+                        <article class="panel settings-card endpoint-card">
+                            <div class="settings-card-heading"><span class="settings-icon settings-icon-teal"><svg class="icon"><use href="#icon-spark"/></svg></span><div><h2>Connected endpoints</h2><p>Existing API routes used by this dashboard</p></div></div>
+                            <div class="endpoint-row"><code>POST</code><span>/api/scan</span><small>Text scan</small></div>
+                            <div class="endpoint-row"><code>POST</code><span>/api/scan-file</span><small>Document scan</small></div>
+                            <div class="endpoint-row"><code>POST</code><span>/api/ask</span><small>Policy-gated LLM</small></div>
+                            <div class="endpoint-row"><code>GET</code><span>/api/logs</span><small>History &amp; analytics</small></div>
+                        </article>
+                    </div>
+                </section>
+
+                <footer class="page-footer"><span><span class="brand-dot">●</span> SENTINEL SECURITY GATEWAY</span><span>Scan results are risk assessments, not guarantees of safety.</span></footer>
+            </main>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/app.js"></script>
+    <dialog class="confirm-dialog" id="flag-confirm-dialog" aria-labelledby="confirm-title">
+        <form method="dialog">
+            <div class="confirm-icon"><svg class="icon"><use href="#icon-shield"/></svg></div>
+            <div class="panel-kicker">POLICY REVIEW</div>
+            <h2 id="confirm-title">This prompt is flagged</h2>
+            <p id="confirm-message">Review the findings before deciding whether to continue.</p>
+            <div class="confirm-actions">
+                <button class="button button-quiet" value="cancel">Keep it on hold</button>
+                <button class="button button-secondary" id="confirm-forward" value="confirm">Confirm &amp; send</button>
+            </div>
+        </form>
+    </dialog>
+    <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </body>
 </html>

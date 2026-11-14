@@ -52,7 +52,7 @@ A lightweight, reusable security layer that sits between an application and a La
 |---|---|
 | Language | Python 3.11 or 3.12 |
 | Backend/API | Flask |
-| Frontend | HTML, CSS, JavaScript, Bootstrap (optional) |
+| Frontend | Responsive HTML, CSS, and vanilla JavaScript |
 | PDF extraction | PyMuPDF |
 | DOCX extraction | python-docx |
 | TXT extraction | Python standard library |
@@ -92,6 +92,8 @@ python app.py
 Open `http://127.0.0.1:5000`.
 
 The initial implementation should support scanning even when no LLM API key is configured. LLM answering should return a clear configuration error until a provider and key are set.
+
+The dashboard's summary cards, decision/risk charts, and seven-day activity chart use SQLite audit metadata returned by `GET /api/logs`. Scan history does not contain full prompt or document contents; aggregate totals cover all recorded scans, while the history table shows the latest 1,000 records.
 
 ## Proposed repository structure
 
@@ -160,7 +162,7 @@ See `ARCHITECTURE.md` for request and response examples. Initial endpoints:
 - `POST /api/scan` — scan a text prompt.
 - `POST /api/scan-file` — extract and scan a supported file.
 - `POST /api/ask` — scan and, only when policy allows, send the request to the configured LLM.
-- `GET /api/logs` — list recent scan metadata.
+- `GET /api/logs` — list recent scan metadata and return all-time dashboard aggregates plus seven-day scan activity.
 
 File uploads are limited by `MAX_CONTENT_LENGTH_MB`; unsupported, empty, corrupted, or text-free documents return a controlled error instead of an `ALLOW` result. Scanned PDFs require OCR, which is not supported in this MVP.
 

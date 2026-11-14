@@ -221,7 +221,7 @@ Response on Allow with configured LLM:
 ```
 
 ### GET `/api/logs`
-Returns recent metadata records. Add pagination and authentication before exposing logs beyond local development.
+Returns recent metadata records and a `summary` object with all-time decision/risk aggregates and the last seven days of scan activity. Full prompt and document content is not included. The current UI displays at most 1,000 recent records; add pagination and authentication before exposing logs beyond local development.
 
 ### GET `/health`
 Returns service status and whether optional components are configured. Never expose secrets.

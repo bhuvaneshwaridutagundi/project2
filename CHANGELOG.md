@@ -13,6 +13,7 @@ All notable project changes should be recorded here. Use dates in `YYYY-MM-DD` f
 ### Added
 - Integrated Gemini through the official `google-genai` SDK with server-side key configuration, timeouts, safe error responses, and rate-limit handling.
 - Added a browser action to ask Gemini only after scanning; flagged prompts require explicit confirmation and blocked content is never forwarded.
+- Replaced the prototype page with a responsive security dashboard, document drop zone, filtered scan history, and charts backed by SQLite audit summaries.
 
 ### Planned
 - Optional classifier adapter.

@@ -137,6 +137,50 @@ class AuditLogger:
             """, (limit,)).fetchall()
             return [dict(row) for row in rows]
 
+    def get_dashboard_summary(self) -> Dict[str, Any]:
+        """Return aggregate scan metrics and the last seven days of activity."""
+        with closing(self._get_connection()) as conn:
+            row = conn.execute("""
+                SELECT
+                    COUNT(*) AS total_scans,
+                    SUM(CASE WHEN decision = 'ALLOW' THEN 1 ELSE 0 END) AS allowed,
+                    SUM(CASE WHEN decision = 'FLAG' THEN 1 ELSE 0 END) AS flagged,
+                    SUM(CASE WHEN decision IN ('FLAG', 'BLOCK') THEN 1 ELSE 0 END) AS threats,
+                    SUM(CASE WHEN decision = 'BLOCK' THEN 1 ELSE 0 END) AS blocked,
+                    SUM(CASE WHEN risk_score BETWEEN 0 AND 29 THEN 1 ELSE 0 END) AS low_risk,
+                    SUM(CASE WHEN risk_score BETWEEN 30 AND 69 THEN 1 ELSE 0 END) AS medium_risk,
+                    SUM(CASE WHEN risk_score BETWEEN 70 AND 100 THEN 1 ELSE 0 END) AS high_risk
+                FROM scans
+            """).fetchone()
+            activity_rows = conn.execute("""
+                SELECT date(timestamp) AS scan_date, COUNT(*) AS scans
+                FROM scans
+                WHERE date(timestamp) >= date('now', '-6 days')
+                GROUP BY date(timestamp)
+                ORDER BY scan_date
+            """).fetchall()
+
+        return {
+            "total_scans": row[0] or 0,
+            "safe_prompts": row[1] or 0,
+            "threats_detected": row[3] or 0,
+            "blocked_prompts": row[4] or 0,
+            "decisions": {
+                "ALLOW": row[1] or 0,
+                "FLAG": row[2] or 0,
+                "BLOCK": row[4] or 0,
+            },
+            "risk_distribution": {
+                "low": row[5] or 0,
+                "medium": row[6] or 0,
+                "high": row[7] or 0,
+            },
+            "activity": [
+                {"date": activity_row[0], "scans": activity_row[1]}
+                for activity_row in activity_rows
+            ],
+        }
+
     def clear_all(self) -> None:
         """Clear all scan records (for testing only)."""
         with closing(self._get_connection()) as conn:

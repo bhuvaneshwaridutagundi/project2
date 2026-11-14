@@ -101,7 +101,7 @@ class LLMClient:
         self,
         task: str,
         document_content: Optional[str] = None,
-        timeout: int = 30,
+        timeout: int = 60,
     ) -> LLMResponse:
         """
         Generate a response from the LLM.

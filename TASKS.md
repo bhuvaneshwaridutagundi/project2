@@ -52,6 +52,7 @@ Status key: `[ ]` not started · `[x]` completed · `[-]` in progress
 - [x] Add text scan form and file upload UI.
 - [x] Display decision, score, severity, and findings.
 - [x] Add safe handling for loading and error states.
+- [x] Add responsive dashboard metrics, audit-backed analytics, and searchable scan history.
 
 **Exit criteria:** all scan operations work from the browser and Postman/curl.
 

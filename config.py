@@ -41,7 +41,7 @@ class Config:
     ).strip()
 
     LLM_MODEL = os.environ.get(
-        "LLM_MODEL", ""
+        "LLM_MODEL", "gemini-2.5-flash"
     ).strip()
 
     # LLM health status
